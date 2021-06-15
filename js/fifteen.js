@@ -1,18 +1,17 @@
 let board = [];
-let firstInitialization = true;
 const slidingDuration = 150;
 const initializationDuration = 2000;
 const shufflingDuration = 1000;
 const zoomingDuration = 1000;
 const wakeUpDuration = 2000;
 const finalizationDuartion = zoomingDuration * 16 + 100;
-const darkBrown = getComputedStyle(document.documentElement).getPropertyValue('--darkBrown');
-const boardSize = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--boardSize').replace(/[^0-9]/g,''))/100;
+const gray = getComputedStyle(document.documentElement).getPropertyValue('--gray');
+const boardSize = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--board-size').replace(/[^0-9]/g,''))/100;
 
 if (window.innerHeight > window.innerWidth) {
-    document.documentElement.style.setProperty('--boardSize', 100/window.innerWidth * Math.ceil(window.innerWidth*boardSize/4)*4 + 'vmin');
+    document.documentElement.style.setProperty('--board-size', 100/window.innerWidth * Math.ceil(window.innerWidth*boardSize/4)*4 + 'vmin');
 } else {
-    document.documentElement.style.setProperty('--boardSize', 100/window.innerHeight * Math.ceil(window.innerHeight*boardSize/4)*4 + 'vmin');
+    document.documentElement.style.setProperty('--board-size', 100/window.innerHeight * Math.ceil(window.innerHeight*boardSize/4)*4 + 'vmin');
 }
 
 if ('serviceWorker' in navigator) {
@@ -44,7 +43,6 @@ const randomizeBoard = () => {
         board = board.map((a) => [Math.random(),a]).sort((a,b) => a[0]-b[0]).map((a) => a[1]);
         if (!isPuzzleSolvable()) [board[13], board[14]] = [board[14], board[13]];
     } while(board.some((item, index) => item == index + 1));
-    board = [1,2,3,4,5,6,7,8,9,10,15,11,13,14,12];
 
     board.push(16);
 }
@@ -83,7 +81,34 @@ const iPhoneXApp = () => {
     return false;
 }
 
+const enableTouch = () => {
+    document.querySelectorAll('.tile').forEach((tile) => {
+
+        if (matchMedia('(hover: none)').matches){
+            tile.addEventListener("touchstart", moveTiles);
+            document.addEventListener("touchstart", moveTiles);
+        } else {
+            tile.addEventListener("mousedown", moveTiles);
+            document.addEventListener("mousedown", moveTiles);
+        }
+    });
+}
+
+const disableTouch = () => {
+    document.querySelectorAll('.tile').forEach((tile) => {
+
+        if (matchMedia('(hover: none)').matches){
+            tile.removeEventListener("touchstart", moveTiles);
+            document.removeEventListener("touchstart", moveTiles);
+        } else {
+            tile.removeEventListener("mousedown", moveTiles);
+            document.removeEventListener("mousedown", moveTiles);
+        }
+    });
+}
+
 const initializeBoard = () => {
+
     randomizeBoard();
 
     document.querySelectorAll('.tile').forEach((tile) => {
@@ -93,25 +118,20 @@ const initializeBoard = () => {
         let destinationTile = document.querySelectorAll('.tile')[board.indexOf(parseInt(tile.id.replace(/[^0-9]/g,'')))];
         let offsetLeft =  destinationTile.offsetLeft - tile.offsetLeft;
         let offsetTop = destinationTile.offsetTop - tile.offsetTop;
-        tile.style.pointerEvents = "none";
-        if (firstInitialization) {
-                if (matchMedia('(hover: none)').matches){
-                    tile.addEventListener("touchstart", moveTiles);
-                } else {
-                    tile.addEventListener("mousedown", moveTiles);
-                }
-        }
         tile.style.transform = `translate(${offsetLeft}px, ${offsetTop}px)`;
     });
-    firstInitialization = false;
     setTimeout(() => {document.querySelectorAll('.tile').forEach((tile, index) => {
         tile.textContent = board[index];
         tile.id = `tile${board[index]}`;
-        tile.style.pointerEvents = "";
-        tile.removeAttribute("style")})}, shufflingDuration);
+        tile.removeAttribute("style")});
+        enableTouch();
+        
+    }, shufflingDuration);
 }
 
 const wakeUp = () => {
+
+    disableTouch();
 
     if (matchMedia('(hover: none)').matches){
         document.removeEventListener("touchstart", moveTiles);
@@ -120,7 +140,6 @@ const wakeUp = () => {
     }
 
     document.querySelectorAll('.tile').forEach((tile) => {
-        tile.style.pointerEvents = "none";
         tile.style.background = "";
     });
     document.querySelectorAll('span').forEach((char) => {
@@ -135,19 +154,21 @@ const wakeUp = () => {
 }
 
 const moveTiles = (e) => {
+ 
+    if (isPuzzleSolved()) {wakeUp(); return}
 
-    if (isPuzzleSolved()){
-        wakeUp();
-        return;
-    }
+    if (e.currentTarget.id == undefined) return;
+
     let id = e.currentTarget.id;
     let clickedTilePosition = board.indexOf(parseInt(id.replace(/[^0-9]/g,'')));
     let emptyTilePosition = board.indexOf(16);
     let movingTilesPositions = getMovingTiles(emptyTilePosition, clickedTilePosition);
 
     if (movingTilesPositions.length == 0) return;
+
+    disableTouch();
+
     document.querySelectorAll('.tile').forEach((tile) => {
-        tile.style.pointerEvents = "none";
         tile.style.transition = `all ${slidingDuration/1000}s ease-in-out`;
     });
 
@@ -184,6 +205,7 @@ const moveTiles = (e) => {
     });
 
     setTimeout(() => {
+        enableTouch();
         document.querySelectorAll('.tile').forEach((tile) => {
             tile.removeAttribute("style")});
         movingTilesElements.forEach((tile) => {
@@ -197,20 +219,18 @@ const moveTiles = (e) => {
 
 const finalizeGame = () => {
     const titleLength = document.querySelectorAll('h1 span').length;
-    document.querySelectorAll('.tile').forEach((tile) => {
-        tile.style.pointerEvents = "none";
-    });
-
+   
+    disableTouch();
 
     let tileNumber = 0;
     const zooming = () => {
         if (tileNumber == 15){
-            document.querySelector(`#tile${tileNumber}`).style.background = darkBrown;
+            document.querySelector(`#tile${tileNumber}`).style.background = gray;
             document.querySelector('#tile15').classList.remove("zoom");
             clearInterval(zoomingInterval);
         } else {
             if (tileNumber) {
-                document.querySelector(`#tile${tileNumber}`).style.background = darkBrown;
+                document.querySelector(`#tile${tileNumber}`).style.background = gray;
                 document.querySelector(`#tile${tileNumber}`).classList.remove("zoom");
             }
             document.querySelector(`#tile${tileNumber+1}`).classList.add("zoom");
@@ -221,32 +241,24 @@ const finalizeGame = () => {
     let  zoomingInterval = setInterval(zooming, zoomingDuration);
 
     let charNumber = 1;
-    const browningTitle = () => {
+    const grayingTitle = () => {
         if (charNumber > titleLength){
             return;
         } else {
             document.querySelector(`#char${charNumber}`).style.transition = `color ${16*zoomingDuration/titleLength/1000}s ease-in-out`;
-            document.querySelector(`#char${charNumber}`).style.color = darkBrown;
+            document.querySelector(`#char${charNumber}`).style.color = gray;
             charNumber++;
         }
-        setTimeout(browningTitle, 16*zoomingDuration/titleLength);
+        setTimeout(grayingTitle, 16*zoomingDuration/titleLength);
     }
-    // browningTitle();
 
-    setTimeout(browningTitle, 250);
+    setTimeout(grayingTitle, 250);
 
     setTimeout(() => {document.querySelectorAll('.tile').forEach((tile) => {
-        tile.style.pointerEvents = ""; 
-        tile.style.transition = `background ${wakeUpDuration/1000}s ease-in-out`;})
-
-        if (matchMedia('(hover: none)').matches){
-            document.addEventListener("touchstart", moveTiles);
-        } else {
-            document.addEventListener("mousedown", moveTiles);
-        }
-
-    }, finalizationDuartion);
+        tile.style.transition = `background ${wakeUpDuration/1000}s ease-in-out`});
+        enableTouch()}, finalizationDuartion);
 }
+
 window.onload = () => {
     document.fonts.ready.then(() => {
         if (iPhoneXApp()) {
@@ -260,6 +272,5 @@ window.onload = () => {
         document.querySelector("body").style.opacity = 1;
         setTimeout(initializeBoard, initializationDuration);
     });
-    
 };
 

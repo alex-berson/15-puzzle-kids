@@ -1,6 +1,6 @@
 const cacheName = 'cache-v2';
 const files = [
-  'https://15-puzzle-kids.netlify.app',
+  'https://alex-berson.github.io/15-puzzle-kids/',
   'index.html',
   'css/style.css',
   'js/fifteen.js',
@@ -36,11 +36,3 @@ self.addEventListener('fetch', event => {
     })
   );
 });
-
-//self.addEventListener('fetch', event => {
-//  event.respondWith(caches.match(event.request)
-//    .then(response => {
-//      return response || fetch(event.request);
-//    })
-//  );
-//});

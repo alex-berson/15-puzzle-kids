@@ -10,29 +10,19 @@
 }
 
 :root {
-    --sepia: white;
+    --white: white;
+    --gray: LightGray;
+    --blue: #009cdf;
+    --green: #5ebd3e;
+    --yellow: #ffb900;
+    --red: #e23838;
 
-    /* --gainsboro: gainsboro; */
-
-    /* --gainsboro: RebeccaPurple; */
-
-
-    /* --darkBrown: RebeccaPurple; */
-
-    --darkBrown: LightGray;
-
-
-
-    --red: darkblue;
-    --brown: darkred;
-    --beige: darkgreen;
-    --black: darkorange;
-    --boardSize: 85vmin;
+    --board-size: 85vmin;
 }
 
 body{
     font-family: 'Roboto Slab', serif;
-    background: var(--sepia);
+    background: var(--white);
     margin: 0px;
     opacity: 0;
 }
@@ -59,37 +49,36 @@ body{
 h1{
     text-align: center;
     font-size: 21vw;
-    /* color: var(--darkBrown); */
     margin-top: 0px;
 }
 
 #char1, #char6, #char10{
-    color: var(--red);
+    color: var(--blue);
 }
 #char2, #char5, #char11{
-    color: var(--brown);
+    color: var(--red);
 }
 #char3, #char7, #char9, #char12{
-    color: var(--beige);
+    color: var(--green);
 }
 #char4, #char8, #char13{
-    color: var(--black);
+    color: var(--yellow);
 }
 
 .board{
     display: grid;
     grid-template-columns: repeat(4, minmax(25%, 1fr));
     padding: 1px;
-    border: 10px solid var(--darkBrown);
+    border: 10px solid var(--gray);
     border-radius: 7px;
-    width: var(--boardSize);
-    height: var(--boardSize);
+    width: var(--board-size);
+    height: var(--board-size);
     margin: auto;
 }
 
 .tile{
     font-weight: bold;
-    color: var(--sepia);
+    color: var(--white);
     padding: 3.5vmin 3vmin 3vmin 3vmin;
     font-size: 10vmin;
     text-align: center;
@@ -101,14 +90,14 @@ h1{
 #designed{
     text-align: center;
     align-self: auto;
-    color: var(--sepia);
+    color: var(--white);
     font-size: 0.43em; 
     margin-top: -1.3em;
 }
 
 a{
     text-decoration: none;
-    color: var(--sepia);
+    color: var(--white);
 }
  
 @keyframes scaling {
@@ -122,7 +111,7 @@ a{
 
 @keyframes coloring {
     to {
-        background: var(--darkBrown);
+        background: var(--gray);
     }
 }
 
@@ -144,7 +133,7 @@ a{
     }
     .board{
         padding: 2px;
-        border: 20px solid var(--darkBrown);
+        border: 20px solid var(--gray);
         border-radius: 10px;
         width: 400px;
         height: 400px;
@@ -164,16 +153,16 @@ a{
 }
 
 #tile1, #tile7, #tile12, #tile14{
-    background: var(--brown);
-}
-#tile2, #tile8, #tile9, #tile15{
     background: var(--red);
 }
+#tile2, #tile8, #tile9, #tile15{
+    background: var(--blue);
+}
 #tile4, #tile6, #tile11, #tile13{
-    background: var(--beige);
+    background: var(--green);
 }
 #tile3, #tile5, #tile10{
-    background: var(--black);
+    background: var(--yellow);
 }
 
 .tile:hover{
