@@ -1,7 +1,7 @@
 # 15 Puzzle for Kids
 
 Arrange tiles in numerical sequence using the extra space in the grid to slide the tiles.
-You can try to solve [15 Puzzle online](https://alex-berson.github.io/15-puzzle-kids/) or <br>
+You can play [15 Puzzle for Kids online](https://alex-berson.github.io/15-puzzle-kids/) or <br>
 [<img src="images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg">](https://apps.apple.com/us/app/15-puzzle-for-kids/id1553031152)
 
 ## Description
